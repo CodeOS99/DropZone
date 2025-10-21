@@ -2,7 +2,7 @@ extends TileMapLayer
 
 const TILE_COLORS = 8
 const DEFAULT_TILE = 7
-const TICK_TIME = .1
+const TICK_TIME = .8
 const TETROMINOES = {
 	"I": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
 	"O": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
@@ -20,6 +20,7 @@ var board = []
 var timer := 0.0
 
 var pieces = [["L", Vector2i(2,0), 0]] # array of [tetromino, coord, tile_idx]
+var curr_piece_idx = 0 # the one which is being controlled right now
 
 func _ready() -> void:
 	# initializatoin first to make testing easy
@@ -30,15 +31,17 @@ func _ready() -> void:
 			board[i].append(DEFAULT_TILE)
 	
 	draw_board()
-	update_board()
-	draw_board()
 
 func _process(delta: float) -> void:
-	timer += delta
+	timer += delta * (10 if Input.is_action_pressed("down") else 1)
 	if timer >= TICK_TIME:
 		timer = 0
 		update_board()
 		draw_board()
+	
+	var hor_movement = (1 if Input.is_action_just_pressed("right") else -1 if Input.is_action_just_pressed("left") else 0)
+	move_if_possible(pieces[curr_piece_idx], Vector2i(hor_movement, 0))
+	
 
 func draw_board() -> void:
 	# reset
@@ -56,12 +59,16 @@ func draw_pieces():
 
 func update_board() -> void:
 	for piece in pieces:
-		var flag = false
-		var candidate = piece.duplicate()
-		candidate[1].y += 1
-		for vertex in TETROMINOES[piece[0]]:
-			if (vertex+piece[1]).y >= size.y-1:
-				flag = true
-		
-		if not flag:
-			piece[1].y += 1
+		move_if_possible(piece, Vector2i(0, 1))
+
+func move_if_possible(piece, displ: Vector2i):
+	var flag = false
+	var candidate = piece.duplicate()
+	candidate[1] += displ
+	for vertex in TETROMINOES[piece[0]]:
+		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
+			flag = true
+	
+	if not flag:
+		piece[1] += displ
+		draw_board()
