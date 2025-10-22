@@ -19,17 +19,19 @@ var board = []
 
 var timer := 0.0
 
-var pieces = [["L", Vector2i(2,0), 0]] # array of [tetromino, coord, tile_idx]
-var curr_piece_idx = 0 # the one which is being controlled right now
+var pieces = [] # array of [tetromino, coord, tile_idx]
+var curr_piece_idx = -1 # the one which is being controlled right now
 
 func _ready() -> void:
 	# initializatoin first to make testing easy
-	while len(board) <= size.y:
+	while len(board) < size.y:
 		board.append([])
 	for i in range(size.y):
-		while len(board[i]) <= size.x:
+		while len(board[i]) < size.x:
 			board[i].append(DEFAULT_TILE)
 	
+	spawn_new_piece()
+	update_board()
 	draw_board()
 
 func _process(delta: float) -> void:
@@ -48,27 +50,58 @@ func draw_board() -> void:
 	for i in range(size.y):
 		for j in range(size.x):
 			set_cell(Vector2i(j, i), 0, Vector2i(board[i][j], 0))
-	
-	# draw the actual things
-	draw_pieces()
-
-func draw_pieces():
-	for piece in pieces: # [tetromino, coord, tile_idx]
-		for vertex in TETROMINOES[piece[0]]: # rel. coords of tetromino:
-			set_cell(vertex+piece[1], 0, Vector2i(piece[2], 0))
 
 func update_board() -> void:
-	for piece in pieces:
-		move_if_possible(piece, Vector2i(0, 1))
+	var gone_through_active = false
+	for piece_idx in range(len(pieces)):
+		if not move_if_possible(pieces[piece_idx], Vector2(0, 1)) and piece_idx == curr_piece_idx and not gone_through_active:
+			spawn_new_piece()
+			gone_through_active = true
 
 func move_if_possible(piece, displ: Vector2i):
+	if displ == Vector2i.ZERO:
+		return true
 	var flag = false
 	var candidate = piece.duplicate()
 	candidate[1] += displ
 	for vertex in TETROMINOES[piece[0]]:
+		# checks if in range
 		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
 			flag = true
+		# checks if empty
+		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x] != DEFAULT_TILE:
+			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
+			var flag2 = false
+			for vertex_displ in TETROMINOES[piece[0]]:
+				var v = vertex_displ + piece[1]
+				if v == vertex + candidate[1]:
+					flag2 = true
+			
+			if not flag2:
+				flag = true
 	
 	if not flag:
-		piece[1] += displ
+		# reset
+		for vertex_displ in TETROMINOES[piece[0]]:
+			var coord = vertex_displ + piece[1]
+			board[coord.y][coord.x] = DEFAULT_TILE
+		
+		piece[1] += displ # change pos
+		
+		# new pos
+		for vertex_displ in TETROMINOES[piece[0]]:
+			var coord = vertex_displ + piece[1]
+			board[coord.y][coord.x] = piece[2]
+			
 		draw_board()
+		return true
+
+	return false
+
+func spawn_new_piece():
+	curr_piece_idx += 1
+	var piece = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'].pick_random() # idc if theres a better way to do this
+	var pos = Vector2i(randi_range(1, size.x-3), 2)
+	var idx = randi_range(0, TILE_COLORS-2)
+	pieces.append([piece, pos, idx])
+	print(pieces)
