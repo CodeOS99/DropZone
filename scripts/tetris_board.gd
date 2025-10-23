@@ -4,13 +4,47 @@ const TILE_COLORS = 8
 const DEFAULT_TILE = 7
 const TICK_TIME = .8
 const TETROMINOES = {
-	"I": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
-	"O": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
-	"T": [Vector2i(1,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
-	"S": [Vector2i(1,0), Vector2i(2,0), Vector2i(0,1), Vector2i(1,1)],
-	"Z": [Vector2i(0,0), Vector2i(1,0), Vector2i(1,1), Vector2i(2,1)],
-	"J": [Vector2i(0,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
-	"L": [Vector2i(2,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
+	# I piece (straight line)
+	"I_0": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
+	"I_1": [Vector2i(2,0), Vector2i(2,1), Vector2i(2,2), Vector2i(2,3)],
+	"I_2": [Vector2i(0,2), Vector2i(1,2), Vector2i(2,2), Vector2i(3,2)],
+	"I_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(1,2), Vector2i(1,3)],
+
+	# O piece (square) — no rotation changes
+	"O_0": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
+	"O_1": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
+	"O_2": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
+	"O_3": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
+
+	# T piece
+	"T_0": [Vector2i(1,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
+	"T_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(2,1), Vector2i(1,2)],
+	"T_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(1,2)],
+	"T_3": [Vector2i(1,0), Vector2i(0,1), Vector2i(1,1), Vector2i(1,2)],
+
+	# S piece
+	"S_0": [Vector2i(1,0), Vector2i(2,0), Vector2i(0,1), Vector2i(1,1)],
+	"S_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(2,1), Vector2i(2,2)],
+	"S_2": [Vector2i(1,1), Vector2i(2,1), Vector2i(0,2), Vector2i(1,2)],
+	"S_3": [Vector2i(0,0), Vector2i(0,1), Vector2i(1,1), Vector2i(1,2)],
+
+	# Z piece
+	"Z_0": [Vector2i(0,0), Vector2i(1,0), Vector2i(1,1), Vector2i(2,1)],
+	"Z_1": [Vector2i(2,0), Vector2i(2,1), Vector2i(1,1), Vector2i(1,2)],
+	"Z_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(1,2), Vector2i(2,2)],
+	"Z_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(0,1), Vector2i(0,2)],
+
+	# J piece
+	"J_0": [Vector2i(0,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
+	"J_1": [Vector2i(1,0), Vector2i(2,0), Vector2i(1,1), Vector2i(1,2)],
+	"J_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(2,2)],
+	"J_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(0,2), Vector2i(1,2)],
+
+	# L piece
+	"L_0": [Vector2i(2,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
+	"L_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(1,2), Vector2i(2,2)],
+	"L_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(0,2)],
+	"L_3": [Vector2i(0,0), Vector2i(1,0), Vector2i(1,1), Vector2i(1,2)],
 }
 
 var size = Vector2i(12, 25)
@@ -39,11 +73,55 @@ func _process(delta: float) -> void:
 	if timer >= TICK_TIME:
 		timer = 0
 		update_board()
-		draw_board()
 	
 	var hor_movement = (1 if Input.is_action_just_pressed("right") else -1 if Input.is_action_just_pressed("left") else 0)
 	move_if_possible(pieces[curr_piece_idx], Vector2i(hor_movement, 0))
 	
+	if Input.is_action_just_pressed("rotate_clock"):
+		var piece = pieces[curr_piece_idx]
+		var flag = false
+		var candidate = piece.duplicate()
+		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+1)%4)
+		if is_valid(piece, candidate):
+			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = DEFAULT_TILE
+			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+1)%4)
+			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = pieces[curr_piece_idx][2]
+				
+	if Input.is_action_just_pressed("rotate_anticlock"):
+		var piece = pieces[curr_piece_idx]
+		var flag = false
+		var candidate = piece.duplicate()
+		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+3)%4)
+		if is_valid(piece, candidate):
+			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = DEFAULT_TILE
+			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+3)%4)
+			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = pieces[curr_piece_idx][2]
+
+func is_valid(piece, candidate):
+	var flag = false
+	for vertex in TETROMINOES[candidate[0]]:
+		if vertex+piece[1] in piece[3]:
+			continue
+		
+		# checks if in range
+		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
+			flag = true
+		# checks if empty
+		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x] != DEFAULT_TILE:
+			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
+			var flag2 = false
+			for vertex_displ in TETROMINOES[piece[0]]:
+				var v = vertex_displ + piece[1]
+				if v == vertex + candidate[1]:
+					flag2 = true
+			
+			if not flag2:
+				flag = true
+	return not flag
 
 func draw_board() -> void:
 	# reset
@@ -143,8 +221,8 @@ func check_for_row():
 
 func spawn_new_piece():
 	curr_piece_idx += 1
-	#var piece = ['I', 'O', 'T', 'S', 'Z', 'J', 'L'].pick_random() # idc if theres a better way to do this
-	var piece = ['I', 'O'].pick_random()
+	var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
+	#var piece = ['I_0', 'O_0'].pick_random()
 	var pos = Vector2i(randi_range(1, size.x-3), 2)
 	var idx = randi_range(0, TILE_COLORS-2)
 	pieces.append([piece, pos, idx, []])
