@@ -1,4 +1,4 @@
-[gd_scene load_steps=6 format=3 uid="uid://dtqdikpb5klkg"]
+[gd_scene load_steps=7 format=3 uid="uid://dtqdikpb5klkg"]
 
 [ext_resource type="Texture2D" uid="uid://dxubjfuh5pcii" path="res://assets/enemy_one/enemy_one_sheet.png" id="1_51fv1"]
 [ext_resource type="Script" path="res://scripts/enemy_one.gd" id="1_iqopr"]
@@ -25,6 +25,9 @@ animations = [{
 "speed": 4.0
 }]
 
+[sub_resource type="CircleShape2D" id="CircleShape2D_252h6"]
+radius = 21.095
+
 [node name="EnemyOne" type="CharacterBody2D"]
 script = ExtResource("1_iqopr")
 
@@ -32,4 +35,11 @@ script = ExtResource("1_iqopr")
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_p6ryv")
 autoplay = "default"
-frame_progress = 0.691753
+frame_progress = 0.816543
+
+[node name="Area2D" type="Area2D" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
+shape = SubResource("CircleShape2D_252h6")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]

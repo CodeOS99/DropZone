@@ -19,6 +19,10 @@ config/icon="res://icon.svg"
 
 enabled=PackedStringArray("res://addons/godot_super-wakatime/plugin.cfg")
 
+[global_group]
+
+TetrisBoard=""
+
 [gui]
 
 theme/custom_font="res://assets/fonts/Tetris2-VP0w.ttf"
@@ -67,5 +71,6 @@ change_mode={
 
 [rendering]
 
+textures/canvas_textures/default_texture_filter=0
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"

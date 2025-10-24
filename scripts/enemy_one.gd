@@ -14,6 +14,19 @@ func _process(delta: float) -> void:
 	velocity = (target_pos-global_position).normalized() * SPEED
 	move_and_slide()
 	update_target()
+	
+	if should_get_new_target():
+		set_target()
+	
+	var tolerance = 10
+	if global_position.distance_to(target_pos) <= tolerance:
+		print("yes")
+
+func should_get_new_target():
+	var piece = Globals.tetris.pieces[piece_idx]
+	
+	if tile_displ in piece[3]:
+		return true
 
 func set_target():
 	piece_idx = Globals.tetris.get_random_piece_idx()
@@ -25,3 +38,7 @@ func set_target():
 func update_target():
 	var piece = Globals.tetris.pieces[piece_idx]
 	target_pos = Globals.tetris.to_global(Globals.tetris.map_to_local(piece[1] + tile_displ))
+
+func _on_area_2d_body_entered(body: Node2D) -> void:
+	if body.is_in_group("TetrisBoard"):
+		pass
