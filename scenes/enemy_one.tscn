@@ -1,6 +1,7 @@
-[gd_scene load_steps=5 format=3 uid="uid://dtqdikpb5klkg"]
+[gd_scene load_steps=6 format=3 uid="uid://dtqdikpb5klkg"]
 
 [ext_resource type="Texture2D" uid="uid://dxubjfuh5pcii" path="res://assets/enemy_one/enemy_one_sheet.png" id="1_51fv1"]
+[ext_resource type="Script" path="res://scripts/enemy_one.gd" id="1_iqopr"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_dwoe8"]
 atlas = ExtResource("1_51fv1")
@@ -25,9 +26,10 @@ animations = [{
 }]
 
 [node name="EnemyOne" type="CharacterBody2D"]
+script = ExtResource("1_iqopr")
 
 [node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_p6ryv")
 autoplay = "default"
-frame_progress = 0.367728
+frame_progress = 0.691753

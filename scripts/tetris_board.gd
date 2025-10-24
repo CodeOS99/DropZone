@@ -1,4 +1,4 @@
-extends TileMapLayer
+class_name Tetris extends TileMapLayer
 
 const TILE_COLORS = 8
 const DEFAULT_TILE = 7
@@ -49,20 +49,22 @@ const TETROMINOES = {
 
 var size = Vector2i(12, 25)
 
-var board = []
+var board = [] # array of arrays of [coord_x, alt] coord_x controls color and alt controls health
 
 var timer := 0.0
 
-var pieces = [] # array of [tetromino, coord, tile_idx, removed]
+var pieces = [] # array of [tetromino, coord, tile_idx, removed, hits_taken+1]
 var curr_piece_idx = -1 # the one which is being controlled right now
 
 func _ready() -> void:
+	Globals.tetris = self
+	
 	# initializatoin first to make testing easy
 	while len(board) < size.y:
 		board.append([])
 	for i in range(size.y):
 		while len(board[i]) < size.x:
-			board[i].append(DEFAULT_TILE)
+			board[i].append([DEFAULT_TILE, 1])
 	
 	spawn_new_piece()
 	update_board()
@@ -93,10 +95,10 @@ func _process(delta: float) -> void:
 		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+1)%4)
 		if is_valid(piece, candidate):
 			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = DEFAULT_TILE
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = DEFAULT_TILE
 			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+1)%4)
 			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = pieces[curr_piece_idx][2]
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = pieces[curr_piece_idx][2]
 				
 	if Input.is_action_just_pressed("rotate_anticlock"):
 		var piece = pieces[curr_piece_idx]
@@ -105,10 +107,10 @@ func _process(delta: float) -> void:
 		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+3)%4)
 		if is_valid(piece, candidate):
 			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = DEFAULT_TILE
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = DEFAULT_TILE
 			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+3)%4)
 			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x] = pieces[curr_piece_idx][2]
+				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = pieces[curr_piece_idx][2]
 
 func is_valid(piece, candidate):
 	var flag = false
@@ -120,7 +122,7 @@ func is_valid(piece, candidate):
 		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
 			flag = true
 		# checks if empty
-		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x] != DEFAULT_TILE:
+		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x][0] != DEFAULT_TILE:
 			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
 			var flag2 = false
 			for vertex_displ in TETROMINOES[piece[0]]:
@@ -136,7 +138,7 @@ func draw_board() -> void:
 	# reset
 	for i in range(size.y):
 		for j in range(size.x):
-			set_cell(Vector2i(j, i), 0, Vector2i(board[i][j], 0))
+			set_cell(Vector2i(j, i), 0, Vector2i(board[i][j][0], 0), board[i][j][1])
 
 func update_board() -> void:
 	var gone_through_active = false
@@ -162,7 +164,7 @@ func move_if_possible(piece, displ: Vector2i):
 		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
 			flag = true
 		# checks if empty
-		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x] != DEFAULT_TILE:
+		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x][0] != DEFAULT_TILE:
 			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
 			var flag2 = false
 			for vertex_displ in TETROMINOES[piece[0]]:
@@ -177,7 +179,7 @@ func move_if_possible(piece, displ: Vector2i):
 		# reset
 		for vertex_displ in TETROMINOES[piece[0]]:
 			var coord = vertex_displ + piece[1]
-			board[coord.y][coord.x] = DEFAULT_TILE
+			board[coord.y][coord.x] = [DEFAULT_TILE, 1]
 		
 		piece[1] += displ # change pos
 		
@@ -186,7 +188,7 @@ func move_if_possible(piece, displ: Vector2i):
 			if vertex_displ in piece[3]:
 				continue
 			var coord = vertex_displ + piece[1]
-			board[coord.y][coord.x] = piece[2]
+			board[coord.y][coord.x][0] = piece[2]
 			
 		draw_board()
 		return true
@@ -198,8 +200,8 @@ func check_for_row():
 	var how_many = 0 # how many rows are cleared in a streak
 	for i in range(size.y):
 		flag = true
-		for j in board[i]:
-			if j == DEFAULT_TILE:
+		for j in range(size.x):
+			if board[i][j][0] == DEFAULT_TILE:
 				flag = false
 			
 			# dont use the currently active piece
@@ -215,13 +217,13 @@ func check_for_row():
 				for vertex_displ in TETROMINOES[piece[0]]:
 					if (vertex_displ+piece[1]).y == i:
 						piece[3].append(vertex_displ+piece[1])
-						board[(vertex_displ+piece[1]).y][(vertex_displ+piece[1]).x] = DEFAULT_TILE
+						board[(vertex_displ+piece[1]).y][(vertex_displ+piece[1]).x][0] = DEFAULT_TILE
 					if (vertex_displ+piece[1]).y <= i:
 						piece[1].y += 1
 			board.remove_at(i)
 			var x = []
 			for j in range(size.x):
-				x.append(DEFAULT_TILE)
+				x.append([DEFAULT_TILE, 1])
 			board.push_front(x)
 		else:
 			if how_many > 0:
@@ -234,4 +236,7 @@ func spawn_new_piece():
 	var piece = ['I_0', 'O_0'].pick_random()
 	var pos = Vector2i(randi_range(1, size.x-3), 2)
 	var idx = randi_range(0, TILE_COLORS-2)
-	pieces.append([piece, pos, idx, []])
+	pieces.append([piece, pos, idx, [], 1])
+
+func get_random_piece_idx(): # used by enemy
+	return randi_range(0, len(pieces)-1)
