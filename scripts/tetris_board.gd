@@ -53,7 +53,7 @@ var board = [] # array of arrays of [coord_x, alt] coord_x controls color and al
 
 var timer := 0.0
 
-var pieces = [] # array of [tetromino, coord, tile_idx, removed, hits_taken+1]
+var pieces = [] # array of [tetromino, coord, tile-idx, removed, {ith-vertex: hits-taken_ith-vertex+1}]
 var curr_piece_idx = -1 # the one which is being controlled right now
 
 func _ready() -> void:
@@ -184,11 +184,13 @@ func move_if_possible(piece, displ: Vector2i):
 		piece[1] += displ # change pos
 		
 		# new pos
-		for vertex_displ in TETROMINOES[piece[0]]:
+		for vertex_displ_idx in range(len(TETROMINOES[piece[0]])):
+			var vertex_displ = TETROMINOES[piece[0]][vertex_displ_idx]
 			if vertex_displ in piece[3]:
 				continue
 			var coord = vertex_displ + piece[1]
 			board[coord.y][coord.x][0] = piece[2]
+			board[coord.y][coord.x][1] = piece[4][vertex_displ]
 			
 		draw_board()
 		return true
@@ -236,7 +238,10 @@ func spawn_new_piece():
 	var piece = ['I_0', 'O_0'].pick_random()
 	var pos = Vector2i(randi_range(1, size.x-3), 2)
 	var idx = randi_range(0, TILE_COLORS-2)
-	pieces.append([piece, pos, idx, [], 1])
+	var hit_array = {}
+	for i in TETROMINOES[piece]:
+		hit_array[i] = 1
+	pieces.append([piece, pos, idx, [], hit_array])
 
 func get_random_piece_idx(): # used by enemy
 	return randi_range(0, len(pieces)-1)

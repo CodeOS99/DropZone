@@ -35,7 +35,7 @@ script = ExtResource("1_iqopr")
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_p6ryv")
 autoplay = "default"
-frame_progress = 0.816543
+frame_progress = 0.121802
 
 [node name="Area2D" type="Area2D" parent="."]
 

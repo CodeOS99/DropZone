@@ -1,11 +1,14 @@
 extends CharacterBody2D
 
 const SPEED = 75
+const COOLDOWN: float = 1.0
 
 var piece_idx: int # index of the piece in the tetris board
 var tile_displ: Vector2i # the displacement of the tile which is target(rel. to the piece, this is not the index)
 
 var target_pos: Vector2
+
+var cooldown_left: float = 0.0
 
 func _ready() -> void:
 	set_target()
@@ -19,8 +22,15 @@ func _process(delta: float) -> void:
 		set_target()
 	
 	var tolerance = 10
-	if global_position.distance_to(target_pos) <= tolerance:
-		print("yes")
+	if global_position.distance_to(target_pos) <= tolerance and cooldown_left <= 0:
+		var piece = Globals.tetris.pieces[piece_idx]
+		if piece[4][tile_displ] <= 3:
+			piece[4][tile_displ] += 1
+		else:
+			piece[3].append(tile_displ)
+		cooldown_left = COOLDOWN
+	
+	cooldown_left -= delta
 
 func should_get_new_target():
 	var piece = Globals.tetris.pieces[piece_idx]
