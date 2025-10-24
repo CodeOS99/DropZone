@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dvxgc2t2xovur"]
+
+[node name="Footsteps" type="CPUParticles2D"]
+amount = 2
+lifetime = 0.3
+explosiveness = 0.17
+lifetime_randomness = 0.21
+emission_shape = 1
+emission_sphere_radius = 8.11
+gravity = Vector2(0, 400)
+initial_velocity_min = 20.0
+initial_velocity_max = 50.0
+angular_velocity_min = -720.0
+angular_velocity_max = 720.0
+linear_accel_min = 22.22
+linear_accel_max = 22.22
+radial_accel_min = -30.0
+radial_accel_max = 30.0
+tangential_accel_min = 27.78
+tangential_accel_max = 47.22
+damping_min = 100.0
+damping_max = 100.0
+angle_min = -720.0
+angle_max = 720.0
+color = Color(1, 1, 1, 0.756863)

@@ -69,10 +69,19 @@ func _ready() -> void:
 	draw_board()
 
 func _process(delta: float) -> void:
+	if not Globals.tetris_mode:
+		timer += delta
+		if timer >= TICK_TIME:
+			timer = 0
+			update_board()
+			draw_board()
+		return
+
 	timer += delta * (10 if Input.is_action_pressed("down") else 1)
 	if timer >= TICK_TIME:
 		timer = 0
 		update_board()
+		draw_board()
 	
 	var hor_movement = (1 if Input.is_action_just_pressed("right") else -1 if Input.is_action_just_pressed("left") else 0)
 	move_if_possible(pieces[curr_piece_idx], Vector2i(hor_movement, 0))
@@ -221,8 +230,8 @@ func check_for_row():
 
 func spawn_new_piece():
 	curr_piece_idx += 1
-	var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
-	#var piece = ['I_0', 'O_0'].pick_random()
+	#var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
+	var piece = ['I_0', 'O_0'].pick_random()
 	var pos = Vector2i(randi_range(1, size.x-3), 2)
 	var idx = randi_range(0, TILE_COLORS-2)
 	pieces.append([piece, pos, idx, []])

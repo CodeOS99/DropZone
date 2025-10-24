@@ -1,0 +1,33 @@
+[gd_scene load_steps=5 format=3 uid="uid://dtqdikpb5klkg"]
+
+[ext_resource type="Texture2D" uid="uid://dxubjfuh5pcii" path="res://assets/enemy_one/enemy_one_sheet.png" id="1_51fv1"]
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_dwoe8"]
+atlas = ExtResource("1_51fv1")
+region = Rect2(0, 0, 16, 16)
+
+[sub_resource type="AtlasTexture" id="AtlasTexture_6c8r0"]
+atlas = ExtResource("1_51fv1")
+region = Rect2(16, 0, 16, 16)
+
+[sub_resource type="SpriteFrames" id="SpriteFrames_p6ryv"]
+animations = [{
+"frames": [{
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_dwoe8")
+}, {
+"duration": 1.0,
+"texture": SubResource("AtlasTexture_6c8r0")
+}],
+"loop": true,
+"name": &"default",
+"speed": 4.0
+}]
+
+[node name="EnemyOne" type="CharacterBody2D"]
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="."]
+scale = Vector2(3, 3)
+sprite_frames = SubResource("SpriteFrames_p6ryv")
+autoplay = "default"
+frame_progress = 0.367728

@@ -1,7 +1,11 @@
-[gd_scene load_steps=5 format=3 uid="uid://xigyapf0ln3t"]
+[gd_scene load_steps=9 format=3 uid="uid://xigyapf0ln3t"]
 
+[ext_resource type="Script" path="res://scripts/main_game.gd" id="1_5cv5h"]
 [ext_resource type="Texture2D" uid="uid://d4k85plhllfr7" path="res://assets/tetrominoes.png" id="1_brpm3"]
+[ext_resource type="PackedScene" uid="uid://eegc8s8dn8a1" path="res://scenes/player.tscn" id="2_6eaa5"]
 [ext_resource type="Script" path="res://scripts/tetris_board.gd" id="2_rqs4o"]
+[ext_resource type="Texture2D" uid="uid://d2ukaij7wrryn" path="res://icon.svg" id="3_1bu05"]
+[ext_resource type="PackedScene" uid="uid://dtqdikpb5klkg" path="res://scenes/enemy_one.tscn" id="5_ouhev"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hso0e"]
 texture = ExtResource("1_brpm3")
@@ -44,11 +48,25 @@ tile_size = Vector2i(32, 32)
 sources/0 = SubResource("TileSetAtlasSource_hso0e")
 
 [node name="MainGame" type="Node2D"]
+script = ExtResource("1_5cv5h")
+
+[node name="Sprite2D" type="Sprite2D" parent="."]
+modulate = Color(0, 0, 0, 1)
+position = Vector2(677.5, 271.5)
+scale = Vector2(52.9453, 26.3672)
+texture = ExtResource("3_1bu05")
 
 [node name="TetrisBoard" type="TileMapLayer" parent="."]
+position = Vector2(190, 201)
 tile_set = SubResource("TileSet_vy4ka")
 script = ExtResource("2_rqs4o")
 
 [node name="Camera2D" type="Camera2D" parent="."]
-position = Vector2(574, 320)
+position = Vector2(574, 421)
 zoom = Vector2(0.77, 0.77)
+
+[node name="Player" parent="." instance=ExtResource("2_6eaa5")]
+position = Vector2(198, 308)
+
+[node name="EnemyOne" parent="." instance=ExtResource("5_ouhev")]
+position = Vector2(156, 251)
