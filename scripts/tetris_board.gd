@@ -190,7 +190,7 @@ func move_if_possible(piece, displ: Vector2i):
 				continue
 			var coord = vertex_displ + piece[1]
 			board[coord.y][coord.x][0] = piece[2]
-			board[coord.y][coord.x][1] = piece[4][vertex_displ]
+			board[coord.y][coord.x][1] = piece[4][TETROMINOES[piece[0][0] + piece[0][1] + "0"][vertex_displ_idx]]
 			
 		draw_board()
 		return true

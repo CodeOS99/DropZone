@@ -35,9 +35,11 @@ script = ExtResource("1_iqopr")
 scale = Vector2(3, 3)
 sprite_frames = SubResource("SpriteFrames_p6ryv")
 autoplay = "default"
-frame_progress = 0.167833
+frame_progress = 0.223434
 
 [node name="Area2D" type="Area2D" parent="."]
 
 [node name="CollisionShape2D" type="CollisionShape2D" parent="Area2D"]
 shape = SubResource("CircleShape2D_252h6")
+
+[connection signal="body_entered" from="Area2D" to="." method="_on_area_2d_body_entered"]
