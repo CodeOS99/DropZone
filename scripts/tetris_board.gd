@@ -4,56 +4,56 @@ const TILE_COLORS = 8
 const DEFAULT_TILE = 7
 const TICK_TIME = .8
 const TETROMINOES = {
-	# I piece (straight line)
+	# I piece (pivot at (1.5,1.5))
 	"I_0": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(3,1)],
 	"I_1": [Vector2i(2,0), Vector2i(2,1), Vector2i(2,2), Vector2i(2,3)],
-	"I_2": [Vector2i(0,2), Vector2i(1,2), Vector2i(2,2), Vector2i(3,2)],
-	"I_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(1,2), Vector2i(1,3)],
+	"I_2": [Vector2i(3,2), Vector2i(2,2), Vector2i(1,2), Vector2i(0,2)],
+	"I_3": [Vector2i(1,3), Vector2i(1,2), Vector2i(1,1), Vector2i(1,0)],
 
-	# O piece (square) — no rotation changes
+	# O piece — no rotation change, but still same-index correspondence
 	"O_0": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
 	"O_1": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
 	"O_2": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
 	"O_3": [Vector2i(0,0), Vector2i(1,0), Vector2i(0,1), Vector2i(1,1)],
 
-	# T piece
+	# T piece (pivot at (1,1))
 	"T_0": [Vector2i(1,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
-	"T_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(2,1), Vector2i(1,2)],
-	"T_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(1,2)],
-	"T_3": [Vector2i(1,0), Vector2i(0,1), Vector2i(1,1), Vector2i(1,2)],
+	"T_1": [Vector2i(2,1), Vector2i(1,0), Vector2i(1,1), Vector2i(1,2)],
+	"T_2": [Vector2i(1,2), Vector2i(2,1), Vector2i(1,1), Vector2i(0,1)],
+	"T_3": [Vector2i(0,1), Vector2i(1,2), Vector2i(1,1), Vector2i(1,0)],
 
-	# S piece
+	# S piece (pivot at (1,1))
 	"S_0": [Vector2i(1,0), Vector2i(2,0), Vector2i(0,1), Vector2i(1,1)],
-	"S_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(2,1), Vector2i(2,2)],
-	"S_2": [Vector2i(1,1), Vector2i(2,1), Vector2i(0,2), Vector2i(1,2)],
-	"S_3": [Vector2i(0,0), Vector2i(0,1), Vector2i(1,1), Vector2i(1,2)],
+	"S_1": [Vector2i(2,1), Vector2i(2,2), Vector2i(1,0), Vector2i(1,1)],
+	"S_2": [Vector2i(1,2), Vector2i(0,2), Vector2i(2,1), Vector2i(1,1)],
+	"S_3": [Vector2i(0,1), Vector2i(0,0), Vector2i(1,2), Vector2i(1,1)],
 
-	# Z piece
+	# Z piece (pivot at (1,1))
 	"Z_0": [Vector2i(0,0), Vector2i(1,0), Vector2i(1,1), Vector2i(2,1)],
 	"Z_1": [Vector2i(2,0), Vector2i(2,1), Vector2i(1,1), Vector2i(1,2)],
-	"Z_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(1,2), Vector2i(2,2)],
-	"Z_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(0,1), Vector2i(0,2)],
+	"Z_2": [Vector2i(2,2), Vector2i(1,2), Vector2i(1,1), Vector2i(0,1)],
+	"Z_3": [Vector2i(0,2), Vector2i(0,1), Vector2i(1,1), Vector2i(1,0)],
 
-	# J piece
+	# J piece (pivot at (1,1))
 	"J_0": [Vector2i(0,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
 	"J_1": [Vector2i(1,0), Vector2i(2,0), Vector2i(1,1), Vector2i(1,2)],
-	"J_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(2,2)],
-	"J_3": [Vector2i(1,0), Vector2i(1,1), Vector2i(0,2), Vector2i(1,2)],
+	"J_2": [Vector2i(2,2), Vector2i(2,1), Vector2i(1,1), Vector2i(0,1)],
+	"J_3": [Vector2i(1,2), Vector2i(0,2), Vector2i(1,1), Vector2i(1,0)],
 
-	# L piece
+	# L piece (pivot at (1,1))
 	"L_0": [Vector2i(2,0), Vector2i(0,1), Vector2i(1,1), Vector2i(2,1)],
 	"L_1": [Vector2i(1,0), Vector2i(1,1), Vector2i(1,2), Vector2i(2,2)],
-	"L_2": [Vector2i(0,1), Vector2i(1,1), Vector2i(2,1), Vector2i(0,2)],
-	"L_3": [Vector2i(0,0), Vector2i(1,0), Vector2i(1,1), Vector2i(1,2)],
+	"L_2": [Vector2i(0,2), Vector2i(2,1), Vector2i(1,1), Vector2i(0,1)],
+	"L_3": [Vector2i(1,2), Vector2i(1,1), Vector2i(1,0), Vector2i(0,0)],
 }
 
 var size = Vector2i(12, 25)
 
-var board = [] # array of arrays of [coord_x, alt] coord_x controls color and alt controls health
+var board = [] # [coord_x, alt] coord_x controls color and alt controls health
 
 var timer := 0.0
 
-var pieces = [] # array of [tetromino, coord, tile-idx, removed, {ith-vertex: hits-taken_ith-vertex+1}]
+var pieces = [] # [tetromino, coord, tile-idx, removed_indices, {ith-vertex: hits-taken_ith-vertex+1}]
 var curr_piece_idx = -1 # the one which is being controlled right now
 
 func _ready() -> void:
@@ -88,54 +88,70 @@ func _process(delta: float) -> void:
 	var hor_movement = (1 if Input.is_action_just_pressed("right") else -1 if Input.is_action_just_pressed("left") else 0)
 	move_if_possible(pieces[curr_piece_idx], Vector2i(hor_movement, 0))
 	
-	if Input.is_action_just_pressed("rotate_clock"):
+	if Input.is_action_just_pressed("rotate_clock") or Input.is_action_just_pressed("rotate_anticlock"):
 		var piece = pieces[curr_piece_idx]
-		var flag = false
+		var old_rot_str = piece[0] 
+		var delta_ = 1 if Input.is_action_just_pressed("rotate_clock") else 3
+		var new_rot_str = rotation_string_for(old_rot_str, delta_)
+
 		var candidate = piece.duplicate()
-		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+1)%4)
+		candidate[0] = new_rot_str
+
 		if is_valid(piece, candidate):
-			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = DEFAULT_TILE
-			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+1)%4)
-			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = pieces[curr_piece_idx][2]
-				
-	if Input.is_action_just_pressed("rotate_anticlock"):
-		var piece = pieces[curr_piece_idx]
-		var flag = false
-		var candidate = piece.duplicate()
-		candidate[0] = piece[0][0] + piece[0][1] + str((int(piece[0][2])+3)%4)
-		if is_valid(piece, candidate):
-			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = DEFAULT_TILE
-			pieces[curr_piece_idx][0] = pieces[curr_piece_idx][0][0] + pieces[curr_piece_idx][0][1] + str((int(pieces[curr_piece_idx][0][2])+3)%4)
-			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
-				board[(vertex_displ+pieces[curr_piece_idx][1]).y][(vertex_displ+pieces[curr_piece_idx][1]).x][0] = pieces[curr_piece_idx][2]
+			for i in range(len(TETROMINOES[old_rot_str])):
+				if i in piece[3]:
+					continue
+				var old_disp = TETROMINOES[old_rot_str][i]
+				var abs_old = old_disp + piece[1]
+				board[abs_old.y][abs_old.x][0] = DEFAULT_TILE
+				board[abs_old.y][abs_old.x][1] = 1
+
+			# update rotation string
+			pieces[curr_piece_idx][0] = new_rot_str
+
+			# place blocks at new rotation positions and restore per index health
+			for i in range(len(TETROMINOES[new_rot_str])):
+				if i in piece[3]:
+					continue
+				var new_disp = TETROMINOES[new_rot_str][i]
+				var abs_new = new_disp + piece[1]
+				board[abs_new.y][abs_new.x][0] = piece[2]
+				board[abs_new.y][abs_new.x][1] = piece[4][i]
+
+func rotation_string_for(piece_string, delta_rot):
+	var base = piece_string.substr(0, 2)   # "T_"
+	var rot = int(piece_string.get_slice("_", 1))
+	var new_rot = (rot + delta_rot) % 4
+	return base + str(new_rot)
 
 func is_valid(piece, candidate):
-	var flag = false
-	for vertex in TETROMINOES[candidate[0]]:
-		if vertex+piece[1] in piece[3]:
+	for i in range(len(TETROMINOES[candidate[0]])):
+		if i in piece[3]:
 			continue
 		
-		# checks if in range
-		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
-			flag = true
-		# checks if empty
-		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x][0] != DEFAULT_TILE:
-			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
-			var flag2 = false
-			for vertex_displ in TETROMINOES[piece[0]]:
-				var v = vertex_displ + piece[1]
-				if v == vertex + candidate[1]:
-					flag2 = true
+		var vertex = TETROMINOES[candidate[0]][i]
+		var abs_pos = vertex + candidate[1]
+		
+		if abs_pos.y >= size.y or abs_pos.x < 0 or abs_pos.x >= size.x:
+			return false
+		
+		if board[abs_pos.y][abs_pos.x][0] != DEFAULT_TILE:
+			var is_current_piece_block = false
+			for j in range(len(TETROMINOES[piece[0]])):
+				if j in piece[3]:
+					continue
+				var piece_vertex = TETROMINOES[piece[0]][j]
+				var piece_abs_pos = piece_vertex + piece[1]
+				if piece_abs_pos == abs_pos:
+					is_current_piece_block = true
+					break
 			
-			if not flag2:
-				flag = true
-	return not flag
+			if not is_current_piece_block:
+				return false
+	
+	return true
 
 func draw_board() -> void:
-	# reset
 	for i in range(size.y):
 		for j in range(size.x):
 			set_cell(Vector2i(j, i), 0, Vector2i(board[i][j][0], 0), board[i][j][1])
@@ -152,50 +168,32 @@ func update_board() -> void:
 func move_if_possible(piece, displ: Vector2i):
 	if displ == Vector2i.ZERO:
 		return true
-	var flag = false
+	
 	var candidate = piece.duplicate()
 	candidate[1] += displ
-	for vertex in TETROMINOES[piece[0]]:
-		if vertex+piece[1] in piece[3]:
-			flag = true
-			continue
-		
-		# checks if in range
-		if (vertex+candidate[1]).y >= size.y or not (vertex+candidate[1]).x in range(0, size.x):
-			flag = true
-		# checks if empty
-		elif board[(vertex+candidate[1]).y][(vertex+candidate[1]).x][0] != DEFAULT_TILE:
-			# I did a huge overhaul of the logic to draw but then it broke this part and i dont want to go back so im doing this :\
-			var flag2 = false
-			for vertex_displ in TETROMINOES[piece[0]]:
-				var v = vertex_displ + piece[1]
-				if v == vertex + candidate[1]:
-					flag2 = true
-			
-			if not flag2:
-				flag = true
 	
-	if not flag:
-		# reset
-		for vertex_displ in TETROMINOES[piece[0]]:
-			var coord = vertex_displ + piece[1]
-			board[coord.y][coord.x] = [DEFAULT_TILE, 1]
-		
-		piece[1] += displ # change pos
-		
-		# new pos
-		for vertex_displ_idx in range(len(TETROMINOES[piece[0]])):
-			var vertex_displ = TETROMINOES[piece[0]][vertex_displ_idx]
-			if vertex_displ in piece[3]:
-				continue
-			var coord = vertex_displ + piece[1]
-			board[coord.y][coord.x][0] = piece[2]
-			board[coord.y][coord.x][1] = piece[4][TETROMINOES[piece[0][0] + piece[0][1] + "0"][vertex_displ_idx]]
-			
-		draw_board()
-		return true
-
-	return false
+	if not is_valid(piece, candidate):
+		return false
+	
+	for i in range(len(TETROMINOES[piece[0]])):
+		if i in piece[3]:  # Check index instead of position
+			continue
+		var vertex_displ = TETROMINOES[piece[0]][i]
+		var old_coord = vertex_displ + piece[1]
+		board[old_coord.y][old_coord.x] = [DEFAULT_TILE, 1]
+	
+	piece[1] += displ
+	
+	for i in range(len(TETROMINOES[piece[0]])):
+		if i in piece[3]:
+			continue
+		var vertex_displ = TETROMINOES[piece[0]][i]
+		var new_coord = vertex_displ + piece[1]
+		board[new_coord.y][new_coord.x][0] = piece[2]
+		board[new_coord.y][new_coord.x][1] = piece[4][i]
+	
+	draw_board()
+	return true
 
 func check_for_row():
 	var flag
@@ -207,7 +205,10 @@ func check_for_row():
 				flag = false
 			
 			# dont use the currently active piece
-			for vertex_displ in TETROMINOES[pieces[curr_piece_idx][0]]:
+			for vertex_idx in range(len(TETROMINOES[pieces[curr_piece_idx][0]])):
+				if vertex_idx in pieces[curr_piece_idx][3]:
+					continue
+				var vertex_displ = TETROMINOES[pieces[curr_piece_idx][0]][vertex_idx]
 				if Vector2i(j, i) == pieces[curr_piece_idx][1] + vertex_displ:
 					flag = false
 					break
@@ -216,9 +217,12 @@ func check_for_row():
 			how_many += 1
 			# move every piece above this one down and in the row, make it blank
 			for piece in pieces:
-				for vertex_displ in TETROMINOES[piece[0]]:
+				for vertex_idx in range(len(TETROMINOES[piece[0]])):
+					if vertex_idx in piece[3]:
+						continue
+					var vertex_displ = TETROMINOES[piece[0]][vertex_idx]
 					if (vertex_displ+piece[1]).y == i:
-						piece[3].append(vertex_displ+piece[1])
+						piece[3].append(vertex_idx)  # Store index not position
 						board[(vertex_displ+piece[1]).y][(vertex_displ+piece[1]).x][0] = DEFAULT_TILE
 					if (vertex_displ+piece[1]).y <= i:
 						piece[1].y += 1
@@ -234,13 +238,13 @@ func check_for_row():
 
 func spawn_new_piece():
 	curr_piece_idx += 1
-	#var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
-	var piece = ['I_0', 'O_0'].pick_random()
+	var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
+	#var piece = ['I_0', 'O_0'].pick_random()
 	var pos = Vector2i(randi_range(1, size.x-3), 2)
 	var idx = randi_range(0, TILE_COLORS-2)
-	var hit_array = {}
-	for i in TETROMINOES[piece]:
-		hit_array[i] = 1
+
+	var hit_array = [1, 1, 1, 1]
+
 	pieces.append([piece, pos, idx, [], hit_array])
 
 func get_random_piece_idx(): # used by enemy

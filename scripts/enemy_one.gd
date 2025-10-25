@@ -7,8 +7,8 @@ var piece_idx: int = -1
 var tile_displ_idx: int = -1
 var tile_displ: Vector2i
 var target_pos: Vector2
-
 var cooldown_left: float = 0.0
+var last_tetro_key: String = ""
 
 func _ready() -> void:
 	update_target()
@@ -17,46 +17,85 @@ func _process(delta: float) -> void:
 	if Globals.tetris == null:
 		return
 	
-	# If the current piece changed, pick a new target
 	if piece_idx != Globals.tetris.curr_piece_idx:
 		update_target()
+		return
 	
 	var piece = Globals.tetris.pieces[piece_idx]
 	var tetro_key = piece[0]
-	var world_tile_pos = Globals.tetris.to_global(Globals.tetris.map_to_local(piece[1] + tile_displ))
 	
-	# Move towards the target
+	if tetro_key != last_tetro_key:
+		update_target()
+		return
+	
+	var tetro_tiles = Globals.tetris.TETROMINOES[tetro_key]
+	
+	if tile_displ_idx >= tetro_tiles.size():
+		update_target()
+		return
+	
+	tile_displ = tetro_tiles[tile_displ_idx]
+	
+	if tile_displ_idx in piece[3]:
+		update_target()
+		return
+	
+	var world_tile_pos = Globals.tetris.to_global(
+		Globals.tetris.map_to_local(piece[1] + tile_displ)
+	)
+	
 	velocity = (world_tile_pos - global_position).normalized() * SPEED
 	move_and_slide()
 	
 	if global_position.distance_to(world_tile_pos) < 10 and cooldown_left <= 0:
-		attack_piece_tile(piece, tetro_key)
+		attack_piece_tile(piece)
 		cooldown_left = COOLDOWN
 	
 	cooldown_left = max(0, cooldown_left - delta)
 
-
-func attack_piece_tile(piece, tetro_key):
-	var tile_ref = Globals.tetris.TETROMINOES[tetro_key][tile_displ_idx]
-	var hit_array = piece[4]
+func attack_piece_tile(piece):
+	var hit_array: Array = piece[4]
 	
-	if hit_array.has(tile_ref):
-		hit_array[tile_ref] += 1
-		if hit_array[tile_ref] > 3:
-			piece[3].append(tile_ref)
-	else:
-		hit_array[tile_ref] = 1
-
+	if tile_displ_idx >= 0 and tile_displ_idx < hit_array.size():
+		hit_array[tile_displ_idx] += 1
+		
+		if hit_array[tile_displ_idx] > 3:
+			piece[3].append(tile_displ_idx)
+			
+			var absolute_pos = piece[1] + tile_displ
+			Globals.tetris.board[absolute_pos.y][absolute_pos.x][0] = Globals.tetris.DEFAULT_TILE
+			Globals.tetris.board[absolute_pos.y][absolute_pos.x][1] = 1
+			
+			Globals.tetris.draw_board()
+			update_target()
 
 func update_target():
-	piece_idx = Globals.tetris.curr_piece_idx
-	var piece = Globals.tetris.pieces[piece_idx]
+	if Globals.tetris == null:
+		return
 	
+	piece_idx = Globals.tetris.curr_piece_idx
+	
+	if piece_idx < 0 or piece_idx >= Globals.tetris.pieces.size():
+		return
+	
+	var piece = Globals.tetris.pieces[piece_idx]
 	var tetro_key = piece[0]
+	last_tetro_key = tetro_key
 	var tetro_tiles = Globals.tetris.TETROMINOES[tetro_key]
 	
-	tile_displ_idx = randi_range(0, tetro_tiles.size() - 1)
+	var available_indices = []
+	for i in range(tetro_tiles.size()):
+		if not (i in piece[3]):
+			available_indices.append(i)
+	
+	if available_indices.is_empty():
+		tile_displ_idx = -1
+		return
+	
+	tile_displ_idx = available_indices.pick_random()
 	tile_displ = tetro_tiles[tile_displ_idx]
 	
 	var local_tile_pos = piece[1] + tile_displ
-	target_pos = Globals.tetris.to_global(Globals.tetris.map_to_local(local_tile_pos))
+	target_pos = Globals.tetris.to_global(
+		Globals.tetris.map_to_local(local_tile_pos)
+	)
