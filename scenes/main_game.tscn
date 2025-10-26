@@ -1,4 +1,4 @@
-[gd_scene load_steps=9 format=4 uid="uid://xigyapf0ln3t"]
+[gd_scene load_steps=10 format=4 uid="uid://xigyapf0ln3t"]
 
 [ext_resource type="Script" path="res://scripts/main_game.gd" id="1_5cv5h"]
 [ext_resource type="Texture2D" uid="uid://d4k85plhllfr7" path="res://assets/tetrominoes.png" id="1_brpm3"]
@@ -6,6 +6,7 @@
 [ext_resource type="Script" path="res://scripts/tetris_board.gd" id="2_rqs4o"]
 [ext_resource type="Texture2D" uid="uid://d2ukaij7wrryn" path="res://icon.svg" id="3_1bu05"]
 [ext_resource type="PackedScene" uid="uid://dtqdikpb5klkg" path="res://scenes/enemy_one.tscn" id="5_ouhev"]
+[ext_resource type="Script" path="res://scripts/enemy_spawner.gd" id="7_qx0o5"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hso0e"]
 texture = ExtResource("1_brpm3")
@@ -167,3 +168,5 @@ position = Vector2(198, 308)
 position = Vector2(156, 251)
 
 [node name="EnemySpawner" type="Node2D" parent="."]
+position = Vector2(1275, 796)
+script = ExtResource("7_qx0o5")
