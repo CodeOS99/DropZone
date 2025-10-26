@@ -17,6 +17,7 @@ func _physics_process(delta: float) -> void:
 		get_tree().root.add_child(b)
 		b.global_position = shoot_point.global_position
 		b.rotation = self.rotation
+		Globals.camera.apply_shake()
 
 	var directions = Vector2(Input.get_axis("left", "right"), Input.get_axis("up", "down"))
 	velocity = directions * SPEED

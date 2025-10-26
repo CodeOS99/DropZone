@@ -1,6 +1,6 @@
 extends Node2D
 
-var time_left = 2.5
+var time_left = 2100
 var enemy = preload("res://scenes/enemy_one.tscn")
 
 func _process(delta: float) -> void:

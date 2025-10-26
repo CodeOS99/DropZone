@@ -1,0 +1,19 @@
+[remap]
+
+importer="mp3"
+type="AudioStreamMP3"
+uid="uid://bpxd2y73bcelk"
+path="res://.godot/imported/Waves in Flight.mp3-f06665707b9dc303ca3e7ee4fad291ff.mp3str"
+
+[deps]
+
+source_file="res://assets/Waves in Flight.mp3"
+dest_files=["res://.godot/imported/Waves in Flight.mp3-f06665707b9dc303ca3e7ee4fad291ff.mp3str"]
+
+[params]
+
+loop=true
+loop_offset=0
+bpm=0
+beat_count=0
+bar_beats=4

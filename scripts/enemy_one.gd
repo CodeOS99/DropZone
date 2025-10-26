@@ -58,6 +58,7 @@ func attack_piece_tile(piece):
 	
 	if tile_displ_idx >= 0 and tile_displ_idx < hit_array.size():
 		hit_array[tile_displ_idx] += 1
+		Globals.score = max(Globals.score-10, 0)
 		
 		if hit_array[tile_displ_idx] > 3:
 			piece[3].append(tile_displ_idx)

@@ -1,0 +1,44 @@
+[gd_scene load_steps=4 format=3 uid="uid://bg8fj7jw6pso4"]
+
+[ext_resource type="AudioStream" uid="uid://bo0jjfau4ruwr" path="res://assets/Abandoned Hopes.mp3" id="1_0p2cl"]
+[ext_resource type="Texture2D" uid="uid://0bsopdwu4nsq" path="res://assets/dropzoneEnd.png" id="2_i6ibt"]
+[ext_resource type="Script" path="res://scripts/play_button.gd" id="3_sjix0"]
+
+[node name="GameOver" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="AbandonedHopes" type="AudioStreamPlayer" parent="."]
+stream = ExtResource("1_0p2cl")
+volume_db = -18.0
+autoplay = true
+
+[node name="TextureRect" type="TextureRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("2_i6ibt")
+
+[node name="Button" type="Button" parent="."]
+layout_mode = 1
+anchors_preset = 7
+anchor_left = 0.5
+anchor_top = 1.0
+anchor_right = 0.5
+anchor_bottom = 1.0
+offset_left = -156.0
+offset_top = -156.0
+offset_right = 159.0
+offset_bottom = -92.0
+grow_horizontal = 2
+grow_vertical = 0
+theme_override_font_sizes/font_size = 50
+text = "PLAY AGAIN"
+script = ExtResource("3_sjix0")

@@ -157,16 +157,38 @@ func draw_board() -> void:
 			set_cell(Vector2i(j, i), 0, Vector2i(board[i][j][0], 0), board[i][j][1])
 
 func update_board() -> void:
-	var gone_through_active = false
+	var spawned_new = false
 	for piece_idx in range(len(pieces)):
-		if not move_if_possible(pieces[piece_idx], Vector2(0, 1)) and piece_idx == curr_piece_idx and not gone_through_active:
+		if not move_if_possible(pieces[piece_idx], Vector2(0, 1)) and piece_idx == curr_piece_idx and not spawned_new:
 			spawn_new_piece()
-			gone_through_active = true
-	if len(TETROMINOES[pieces[curr_piece_idx][0]]) == len(pieces[curr_piece_idx][3]):
+			spawned_new = true
+	
+	if curr_piece_idx < len(pieces) and len(TETROMINOES[pieces[curr_piece_idx][0]]) == len(pieces[curr_piece_idx][3]) and not spawned_new:
 		spawn_new_piece()
 	
 	check_for_row()
 
+func spawn_new_piece():
+	var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random()
+	var pos = Vector2i(randi_range(1, size.x-3), 2)
+	var idx = randi_range(0, TILE_COLORS-2)
+	var hit_array = [1, 1, 1, 1]
+
+	var new_piece = [piece, pos, idx, [], hit_array]
+
+	# Check if spawn position overlaps with existing blocks
+	for i in range(len(TETROMINOES[piece])):
+		var vertex = TETROMINOES[piece][i]
+		var abs_pos = vertex + pos
+		
+		if abs_pos.y < size.y and abs_pos.x >= 0 and abs_pos.x < size.x:
+			if board[abs_pos.y][abs_pos.x][0] != DEFAULT_TILE:
+				# Overlapping with existing piece - game over
+				get_tree().change_scene_to_file("res://scenes/game_over.tscn")
+				return
+
+	pieces.append(new_piece)
+	curr_piece_idx = len(pieces) - 1
 func move_if_possible(piece, displ: Vector2i):
 	if displ == Vector2i.ZERO:
 		return true
@@ -243,17 +265,6 @@ func check_for_row():
 			3: score_gain = 500
 			4: score_gain = 800
 		Globals.score += score_gain
-
-func spawn_new_piece():
-	curr_piece_idx += 1
-	var piece = ['I_0', 'O_0', 'T_0', 'S_0', 'Z_0', 'J_0', 'L_0'].pick_random() # idc if theres a better way to do this
-	#var piece = ['I_0', 'O_0'].pick_random()
-	var pos = Vector2i(randi_range(1, size.x-3), 2)
-	var idx = randi_range(0, TILE_COLORS-2)
-
-	var hit_array = [1, 1, 1, 1]
-
-	pieces.append([piece, pos, idx, [], hit_array])
 
 func get_random_piece_idx(): # used by enemy
 	return randi_range(0, len(pieces)-1)
