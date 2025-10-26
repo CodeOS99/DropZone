@@ -1,4 +1,4 @@
-[gd_scene load_steps=10 format=4 uid="uid://xigyapf0ln3t"]
+[gd_scene load_steps=11 format=4 uid="uid://xigyapf0ln3t"]
 
 [ext_resource type="Script" path="res://scripts/main_game.gd" id="1_5cv5h"]
 [ext_resource type="Texture2D" uid="uid://d4k85plhllfr7" path="res://assets/tetrominoes.png" id="1_brpm3"]
@@ -7,6 +7,7 @@
 [ext_resource type="Texture2D" uid="uid://d2ukaij7wrryn" path="res://icon.svg" id="3_1bu05"]
 [ext_resource type="PackedScene" uid="uid://dtqdikpb5klkg" path="res://scenes/enemy_one.tscn" id="5_ouhev"]
 [ext_resource type="Script" path="res://scripts/enemy_spawner.gd" id="7_qx0o5"]
+[ext_resource type="Script" path="res://scripts/score_label.gd" id="8_ob53s"]
 
 [sub_resource type="TileSetAtlasSource" id="TileSetAtlasSource_hso0e"]
 texture = ExtResource("1_brpm3")
@@ -170,3 +171,21 @@ position = Vector2(156, 251)
 [node name="EnemySpawner" type="Node2D" parent="."]
 position = Vector2(1275, 796)
 script = ExtResource("7_qx0o5")
+
+[node name="CanvasLayer" type="CanvasLayer" parent="."]
+
+[node name="Control" type="Control" parent="CanvasLayer"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ScoreLabel" type="Label" parent="CanvasLayer/Control"]
+layout_mode = 1
+offset_right = 228.0
+offset_bottom = 56.0
+theme_override_font_sizes/font_size = 50
+text = "SCORE: 0"
+script = ExtResource("8_ob53s")

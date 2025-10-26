@@ -206,7 +206,7 @@ func check_for_row():
 			if board[i][j][0] == DEFAULT_TILE:
 				flag = false
 			
-			# dont use the currently active piece
+			# don't use the currently active piece
 			for vertex_idx in range(len(TETROMINOES[pieces[curr_piece_idx][0]])):
 				if vertex_idx in pieces[curr_piece_idx][3]:
 					continue
@@ -224,7 +224,7 @@ func check_for_row():
 						continue
 					var vertex_displ = TETROMINOES[piece[0]][vertex_idx]
 					if (vertex_displ+piece[1]).y == i:
-						piece[3].append(vertex_idx)  # Store index not position
+						piece[3].append(vertex_idx)
 						board[(vertex_displ+piece[1]).y][(vertex_displ+piece[1]).x][0] = DEFAULT_TILE
 					if (vertex_displ+piece[1]).y <= i:
 						piece[1].y += 1
@@ -233,10 +233,16 @@ func check_for_row():
 			for j in range(size.x):
 				x.append([DEFAULT_TILE, 1])
 			board.push_front(x)
-		else:
-			if how_many > 0:
-				print(how_many)
-			how_many = 0
+	
+	if how_many > 0:
+		var score_gain
+		
+		match how_many:
+			1: score_gain = 100
+			2: score_gain = 300
+			3: score_gain = 500
+			4: score_gain = 800
+		Globals.score += score_gain
 
 func spawn_new_piece():
 	curr_piece_idx += 1
