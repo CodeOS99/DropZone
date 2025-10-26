@@ -162,6 +162,8 @@ func update_board() -> void:
 		if not move_if_possible(pieces[piece_idx], Vector2(0, 1)) and piece_idx == curr_piece_idx and not gone_through_active:
 			spawn_new_piece()
 			gone_through_active = true
+	if len(TETROMINOES[pieces[curr_piece_idx][0]]) == len(pieces[curr_piece_idx][3]):
+		spawn_new_piece()
 	
 	check_for_row()
 

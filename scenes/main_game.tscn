@@ -165,3 +165,5 @@ position = Vector2(198, 308)
 
 [node name="EnemyOne" parent="." instance=ExtResource("5_ouhev")]
 position = Vector2(156, 251)
+
+[node name="EnemySpawner" type="Node2D" parent="."]

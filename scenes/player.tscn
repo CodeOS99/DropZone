@@ -29,3 +29,6 @@ scale_amount_max = 5.0
 [node name="Player" type="Sprite2D" parent="."]
 scale = Vector2(3, 3)
 texture = ExtResource("1_x2fns")
+
+[node name="ShootPoint" type="Node2D" parent="."]
+position = Vector2(0, -25)
